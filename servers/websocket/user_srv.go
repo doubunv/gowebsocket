@@ -69,8 +69,8 @@ func checkUserOnline(appID uint32, userID string) (online bool, err error) {
 }
 
 // SendUserMessage 给用户发送消息
-func SendUserMessage(appID uint32, userID string, msgID, message string) (sendResults bool, err error) {
-	data := models.GetTextMsgData(userID, msgID, message)
+func SendUserMessage(appID uint32, userID string, msgID, cmd, message string) (sendResults bool, err error) {
+	data := models.GetTextMsgData(userID, msgID, cmd, message)
 	client := GetUserClient(appID, userID)
 	if client != nil {
 		// 在本机发送
@@ -91,7 +91,7 @@ func SendUserMessage(appID uint32, userID string, msgID, message string) (sendRe
 		return false, nil
 	}
 	server := models.NewServer(info.AccIp, info.AccPort)
-	msg, err := grpcclient.SendMsg(server, msgID, appID, userID, models.MessageCmdMsg, models.MessageCmdMsg, message)
+	msg, err := grpcclient.SendMsg(server, msgID, appID, userID, cmd, message)
 	if err != nil {
 		fmt.Println("给用户发送消息失败", key, err)
 		return false, err
@@ -116,7 +116,7 @@ func SendUserMessageLocal(appID uint32, userID string, data string) (sendResults
 }
 
 // SendUserMessageAll 给全体用户发消息
-func SendUserMessageAll(appID uint32, userID string, msgID, cmd, message string) (sendResults bool, err error) {
+func SendUserMessageAll(appID uint32, userID string, msgID, cmd, messageType, message string) (sendResults bool, err error) {
 	sendResults = true
 	currentTime := uint64(time.Now().Unix())
 	servers, err := cache.GetServerAll(currentTime)
@@ -126,7 +126,7 @@ func SendUserMessageAll(appID uint32, userID string, msgID, cmd, message string)
 	}
 	for _, server := range servers {
 		if IsLocal(server) {
-			data := models.GetMsgData(userID, msgID, cmd, message)
+			data := models.GetMsgData(userID, msgID, cmd, messageType, message)
 			AllSendMessages(appID, userID, data)
 		} else {
 			_, _ = grpcclient.SendMsgAll(server, msgID, appID, userID, cmd, message)

@@ -23,7 +23,6 @@ type login struct {
 // GetKey 获取 key
 func (l *login) GetKey() (key string) {
 	key = GetUserKey(l.AppID, l.UserID)
-
 	return
 }
 

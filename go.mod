@@ -1,20 +1,23 @@
 module github.com/link1st/gowebsocket/v2
 
-go 1.18
+go 1.22
+
+toolchain go1.22.4
 
 require (
 	github.com/gin-gonic/gin v1.9.1
-	github.com/golang/protobuf v1.5.3
+	github.com/golang/protobuf v1.5.4
 	github.com/gorilla/websocket v1.4.2
 	github.com/redis/go-redis/v9 v9.0.3
+	github.com/spf13/cast v1.3.1-0.20190531093228-c01685bb8421
 	github.com/spf13/viper v1.4.1-0.20190728125013-1b33e8258e07
-	google.golang.org/grpc v1.56.3
-	google.golang.org/protobuf v1.33.0
+	google.golang.org/grpc v1.69.2
+	google.golang.org/protobuf v1.35.1
 )
 
 require (
 	github.com/bytedance/sonic v1.9.1 // indirect
-	github.com/cespare/xxhash/v2 v2.2.0 // indirect
+	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20221115062448-fe3a3abad311 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/fsnotify/fsnotify v1.4.8-0.20190312181446-1485a34d5d57 // indirect
@@ -36,7 +39,6 @@ require (
 	github.com/pelletier/go-toml v1.4.1-0.20190725070617-84da2c4a25c5 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.8 // indirect
 	github.com/spf13/afero v1.1.2 // indirect
-	github.com/spf13/cast v1.3.1-0.20190531093228-c01685bb8421 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.4-0.20181223182923-24fa6976df40 // indirect
 	github.com/subosito/gotenv v1.1.1 // indirect
@@ -44,7 +46,7 @@ require (
 	github.com/ugorji/go/codec v1.2.11 // indirect
 	golang.org/x/arch v0.3.0 // indirect
 	golang.org/x/crypto v0.31.0 // indirect
-	golang.org/x/net v0.23.0 // indirect
+	golang.org/x/net v0.30.0 // indirect
 	golang.org/x/sys v0.28.0 // indirect
 	golang.org/x/text v0.21.0 // indirect
 	google.golang.org/genproto v0.0.0-20230410155749-daa745c078e1 // indirect

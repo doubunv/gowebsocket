@@ -41,18 +41,34 @@ func ProcessData(client *Client, message []byte) {
 			fmt.Println("处理数据 stop", r)
 		}
 	}()
+
+	//lg := models.Login{
+	//	Token:     "",
+	//	AppID:     101,
+	//	ImAccount: "16125083",
+	//}
+	//
+	//marshal, err := json.Marshal(lg)
+	//rq := models.Request{
+	//	Seq:  "",
+	//	Cmd:  "login",
+	//	Data: string(marshal),
+	//}
+	//
+	//message, err = json.Marshal(rq)
+
 	request := &models.Request{}
 	if err := json.Unmarshal(message, request); err != nil {
 		fmt.Println("处理数据 json Unmarshal", err)
 		client.SendMsg([]byte("数据不合法"))
 		return
 	}
-	requestData, err := json.Marshal(request.Data)
-	if err != nil {
-		fmt.Println("处理数据 json Marshal", err)
-		client.SendMsg([]byte("处理数据失败"))
-		return
-	}
+	//requestData, err := json.Marshal(request.Data)
+	//if err != nil {
+	//	fmt.Println("处理数据 json Marshal", err)
+	//	client.SendMsg([]byte("处理数据失败"))
+	//	return
+	//}
 	seq := request.Seq
 	cmd := request.Cmd
 	var (
@@ -66,12 +82,13 @@ func ProcessData(client *Client, message []byte) {
 
 	// 采用 map 注册的方式
 	if value, ok := getHandlers(cmd); ok {
-		code, msg, data = value(client, seq, requestData)
+		code, msg, data = value(client, seq, []byte(request.Data))
 	} else {
-		code = common.RoutingNotExist
+		code = common.ServerError
+		msg = "cmd error"
 		fmt.Println("处理数据 路由不存在", client.Addr, "cmd", cmd)
 	}
-	msg = common.GetErrorMessage(code, msg)
+	//msg = common.GetErrorMessage(code, msg)
 	responseHead := models.NewResponseHead(seq, cmd, code, msg, data)
 	headByte, err := json.Marshal(responseHead)
 	if err != nil {

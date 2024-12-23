@@ -62,10 +62,10 @@ func (s *server) SendMsg(c context.Context, req *protobuf.SendMsgReq) (rsp *prot
 	rsp = &protobuf.SendMsgRsp{}
 	if req.GetIsLocal() {
 		// 不支持
-		setErr(rsp, common.ParameterIllegal, "")
+		setErr(rsp, common.ServerError, "")
 		return
 	}
-	data := models.GetMsgData(req.GetUserID(), req.GetSeq(), req.GetCms(), req.GetMsg())
+	data := models.GetMsgData(req.GetUserID(), req.GetSeq(), req.GetCms(), req.GetType(), req.GetMsg())
 	sendResults, err := websocket.SendUserMessageLocal(req.GetAppID(), req.GetUserID(), data)
 	if err != nil {
 		fmt.Println("系统错误", err)
@@ -74,7 +74,7 @@ func (s *server) SendMsg(c context.Context, req *protobuf.SendMsgReq) (rsp *prot
 	}
 	if !sendResults {
 		fmt.Println("发送失败", err)
-		setErr(rsp, common.OperationFailure, "")
+		setErr(rsp, common.ServerError, "")
 		return rsp, nil
 	}
 	setErr(rsp, common.OK, "")
@@ -86,7 +86,7 @@ func (s *server) SendMsg(c context.Context, req *protobuf.SendMsgReq) (rsp *prot
 func (s *server) SendMsgAll(c context.Context, req *protobuf.SendMsgAllReq) (rsp *protobuf.SendMsgAllRsp, err error) {
 	fmt.Println("grpc_request 给本机全体用户发消息", req.String())
 	rsp = &protobuf.SendMsgAllRsp{}
-	data := models.GetMsgData(req.GetUserID(), req.GetSeq(), req.GetCms(), req.GetMsg())
+	data := models.GetMsgData(req.GetUserID(), req.GetSeq(), req.GetCms(), req.Type, req.GetMsg())
 	websocket.AllSendMessages(req.GetAppID(), req.GetUserID(), data)
 	setErr(rsp, common.OK, "")
 	fmt.Println("grpc_response 给本机全体用户发消息:", rsp.String())

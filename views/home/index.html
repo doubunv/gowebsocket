@@ -336,6 +336,7 @@
 
         // 连接webSocket
         ws = new WebSocket("ws://127.0.0.1:8089/acc");
+        let roomId = ""
 
         ws.onopen = function(evt) {
             console.log("Connection open ...");
@@ -349,7 +350,7 @@
 
             person = randomNumber(10000, 99999)
             console.log("用户准备登陆:" + person);
-            ws.send('{"seq":"' + sendID() + '","cmd":"login","data":{"userID":"' + person + '","appID":101}}');
+            ws.send('{"seq":"' + sendID() + '","cmd":"login","data":{"imAccount":"' + person + '","appID":101}}');
 
             // 定时心跳
             setInterval(heartbeat, 30 * 1000)
@@ -361,7 +362,11 @@
             data_array = JSON.parse(evt.data);
             console.log(data_array);
 
-            if (data_array.cmd === "msg") {
+            if (data_array.cmd === "login") {
+                console.log("login", data_array.response.data)
+                roomId = data_array.response.data.imRoomId
+            } else if (data_array.cmd === "msg") {
+                console.log("msg receive", data_array.response.data)
                 data = data_array.response.data
                 addChatWith(msg(data.from, data.msg))
             } else if (data_array.cmd === "enter") {
@@ -405,6 +410,8 @@
             console.log("button 点击:" + msg);
             if (msg !== "") {
 
+                ws.send('{"seq":"' + sendID() + '","cmd":"sendMsg","data":{"roomID":"'+roomId+'","messageType":"text","message":"'+msg+'"}}');
+                return
                 $.ajax({
                     type: "POST",
                     url: 'http://127.0.0.1:8080/user/sendMessageAll',

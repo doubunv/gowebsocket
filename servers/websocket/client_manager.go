@@ -2,6 +2,7 @@
 package websocket
 
 import (
+	"encoding/json"
 	"fmt"
 	"sync"
 	"time"
@@ -207,7 +208,14 @@ func (manager *ClientManager) EventLogin(login *login) {
 	}
 	fmt.Println("EventLogin 用户登录", client.Addr, login.AppID, login.UserID)
 	orderID := helper.GetOrderIDTime()
-	_, _ = SendUserMessageAll(login.AppID, login.UserID, orderID, models.MessageCmdEnter, "哈喽~")
+	msg := models.Message{
+		Message:       "加入聊天~",
+		MessageType:   models.MessageTypeText,
+		RoomID:        "",
+		FormImAccount: client.UserID,
+	}
+	marshal, _ := json.Marshal(msg)
+	_, _ = SendUserMessageAll(login.AppID, login.UserID, orderID, models.MessageCmdEnter, models.MessageTypeText, string(marshal))
 }
 
 // EventUnregister 用户断开连接
@@ -233,7 +241,14 @@ func (manager *ClientManager) EventUnregister(client *Client) {
 	fmt.Println("EventUnregister 用户断开连接", client.Addr, client.AppID, client.UserID)
 	if client.UserID != "" {
 		orderID := helper.GetOrderIDTime()
-		_, _ = SendUserMessageAll(client.AppID, client.UserID, orderID, models.MessageCmdExit, "用户已经离开~")
+		msg := models.Message{
+			Message:       "已经离开~",
+			MessageType:   models.MessageTypeText,
+			RoomID:        "",
+			FormImAccount: client.UserID,
+		}
+		marshal, _ := json.Marshal(msg)
+		_, _ = SendUserMessageAll(client.AppID, client.UserID, orderID, models.MessageCmdExit, models.MessageTypeText, string(marshal))
 	}
 }
 

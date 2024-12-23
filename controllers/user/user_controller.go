@@ -10,7 +10,6 @@ import (
 	"github.com/link1st/gowebsocket/v2/common"
 	"github.com/link1st/gowebsocket/v2/controllers"
 	"github.com/link1st/gowebsocket/v2/lib/cache"
-	"github.com/link1st/gowebsocket/v2/models"
 	"github.com/link1st/gowebsocket/v2/servers/websocket"
 )
 
@@ -43,24 +42,34 @@ func Online(c *gin.Context) {
 
 // SendMessage 给用户发送消息
 func SendMessage(c *gin.Context) {
+	type SendMessage struct {
+		AppID   string `json:"appID"`
+		UserID  string `json:"userID"`
+		MsgID   string `json:"msgID"`
+		Message string `json:"message"`
+		Cmd     string `json:"cmd"`
+	}
 	// 获取参数
-	appIDStr := c.PostForm("appID")
-	userID := c.PostForm("userID")
-	msgID := c.PostForm("msgID")
-	message := c.PostForm("message")
+	msg := &SendMessage{}
+	c.BindJSON(msg)
+	appIDStr := msg.AppID
+	userID := msg.UserID
+	msgID := msg.MsgID
+	message := msg.Message
+	cmd := msg.Cmd
+
 	appIDUint64, _ := strconv.ParseInt(appIDStr, 10, 32)
 	appID := uint32(appIDUint64)
 	fmt.Println("http_request 给用户发送消息", appIDStr, userID, msgID, message)
 
 	// TODO::进行用户权限认证，一般是客户端传入TOKEN，然后检验TOKEN是否合法，通过TOKEN解析出来用户ID
-	// 本项目只是演示，所以直接过去客户端传入的用户ID(userID)
 	data := make(map[string]interface{})
 	if cache.SeqDuplicates(msgID) {
 		fmt.Println("给用户发送消息 重复提交:", msgID)
 		controllers.Response(c, common.OK, "", data)
 		return
 	}
-	sendResults, err := websocket.SendUserMessage(appID, userID, msgID, message)
+	sendResults, err := websocket.SendUserMessage(appID, userID, msgID, cmd, message)
 	if err != nil {
 		data["sendResultsErr"] = err.Error()
 	}
@@ -70,13 +79,27 @@ func SendMessage(c *gin.Context) {
 
 // SendMessageAll 给全员发送消息
 func SendMessageAll(c *gin.Context) {
+	type SendMessage struct {
+		AppID       string `json:"appID"`
+		UserID      string `json:"userID"`
+		MsgID       string `json:"msgID"`
+		Message     string `json:"message"`
+		MessageType string `json:"messageType"`
+		Cmd         string `json:"cmd"`
+	}
 	// 获取参数
-	appIDStr := c.PostForm("appID")
-	userID := c.PostForm("userID")
-	msgID := c.PostForm("msgID")
-	message := c.PostForm("message")
+	msg := &SendMessage{}
+	c.BindJSON(msg)
+	appIDStr := msg.AppID
+	userID := msg.UserID
+	msgID := msg.MsgID
+	message := msg.Message
+	messageType := msg.MessageType
+	cmd := msg.Cmd
+
 	appIDUint64, _ := strconv.ParseInt(appIDStr, 10, 32)
 	appID := uint32(appIDUint64)
+
 	fmt.Println("http_request 给全体用户发送消息", appIDStr, userID, msgID, message)
 	data := make(map[string]interface{})
 	if cache.SeqDuplicates(msgID) {
@@ -84,11 +107,10 @@ func SendMessageAll(c *gin.Context) {
 		controllers.Response(c, common.OK, "", data)
 		return
 	}
-	sendResults, err := websocket.SendUserMessageAll(appID, userID, msgID, models.MessageCmdMsg, message)
+	sendResults, err := websocket.SendUserMessageAll(appID, userID, msgID, cmd, messageType, message)
 	if err != nil {
 		data["sendResultsErr"] = err.Error()
 	}
 	data["sendResults"] = sendResults
 	controllers.Response(c, common.OK, "", data)
-
 }

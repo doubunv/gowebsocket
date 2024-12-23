@@ -13,7 +13,7 @@ type Head struct {
 // Response 响应数据体
 type Response struct {
 	Code    uint32      `json:"code"`
-	CodeMsg string      `json:"codeMsg"`
+	CodeMsg string      `json:"message"`
 	Data    interface{} `json:"data"` // 数据 json
 }
 
