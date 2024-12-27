@@ -208,7 +208,7 @@ func SendMsgController(client *Client, seq string, message []byte) (code uint32,
 	request := &models.SendMsg{}
 	if err := json.Unmarshal(message, request); err != nil {
 		code = common.ServerError
-		fmt.Println("用户登录 解析数据失败", seq, err)
+		fmt.Println("发送消息 解析数据失败", seq, err)
 		return
 	}
 
@@ -239,7 +239,7 @@ func GetMsgLogController(client *Client, seq string, message []byte) (code uint3
 	request := &models.GetMsgLog{}
 	if err := json.Unmarshal(message, request); err != nil {
 		code = common.ServerError
-		fmt.Println("用户登录 解析数据失败", seq, err)
+		fmt.Println("获取消息记录 解析数据失败", seq, err)
 		return
 	}
 
