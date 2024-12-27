@@ -6,7 +6,6 @@ app:
   httpUrl: 127.0.0.1:8080
   webSocketUrl:  127.0.0.1:8089
 
-
 redis:
   addr: "localhost:6379"
   password: ""
@@ -14,6 +13,6 @@ redis:
   poolSize: 30
   minIdleConns: 30
 
-
 api:
   httpUrl: "http://127.0.0.1:8081"
+
